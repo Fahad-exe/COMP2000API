@@ -26,11 +26,14 @@ namespace COMP2000API.Models
                 {
                     cmd.CommandType = System.Data.CommandType.StoredProcedure;
                     cmd.Parameters.Add(new SqlParameter("@StudentID", sp.StudentID));
-                    cmd.Parameters.Add(new SqlParameter("@fName",sp.First_Name));
+                    cmd.Parameters.Add(new SqlParameter("@fName", sp.First_Name));
                     cmd.Parameters.Add(new SqlParameter("@lName", sp.Second_Name));
                     cmd.Parameters.Add(new SqlParameter("@Title", sp.Title));
                     cmd.Parameters.Add(new SqlParameter("@Description", sp.Description));
                     cmd.Parameters.Add(new SqlParameter("@Year", sp.Year));
                 }
+            }
+            return false;
+        }
     }
 }
