@@ -12,13 +12,21 @@ namespace COMP2000API.Models
     public class DataAccess : DbContext
     {
         private readonly string _connection;
+        public DbSet<StudentProject> StudentProjects { get; set; }
 
-        public DataAccess(IConfiguration configuration)
+        public DataAccess(DbContextOptions<DataAccess> options) : base(options)
         {
-            _connection = configuration.GetConnectionString("COMP2001_DB");
+            _connection = Database.GetConnectionString();
         }
 
-        public bool Create(StudentProject sp)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<StudentProject>()
+                .ToView(nameof(StudentProjects))
+                .HasKey(t => t.ProjectID);
+        }
+
+        public void Create(StudentProject sp)
         {
             using (SqlConnection sql = new SqlConnection(_connection))
             {
@@ -31,9 +39,49 @@ namespace COMP2000API.Models
                     cmd.Parameters.Add(new SqlParameter("@Title", sp.Title));
                     cmd.Parameters.Add(new SqlParameter("@Description", sp.Description));
                     cmd.Parameters.Add(new SqlParameter("@Year", sp.Year));
+
+                    sql.Open();
+
+                    cmd.ExecuteNonQuery();
                 }
             }
-            return false;
+        }
+
+        public void Update(StudentProject sp)
+        {
+            using (SqlConnection sql = new SqlConnection(_connection))
+            {
+                using (SqlCommand cmd = new SqlCommand("EditStudentProject", sql))
+                {
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.Parameters.Add(new SqlParameter("@ProjectID", sp.ProjectID));
+                    cmd.Parameters.Add(new SqlParameter("@Title", sp.Title));
+                    cmd.Parameters.Add(new SqlParameter("@Description", sp.Description));
+                    cmd.Parameters.Add(new SqlParameter("@Year", sp.Year));
+                    cmd.Parameters.Add(new SqlParameter("@thumbnailURL", sp.ThumbnailURL));
+                    cmd.Parameters.Add(new SqlParameter("@posterURL", sp.PosterURL));
+
+                    sql.Open();
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public void Delete(int id)
+        {
+            using (SqlConnection sql = new SqlConnection(_connection))
+            {
+                using (SqlCommand cmd = new SqlCommand("DeleteProject", sql))
+                {
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.Parameters.Add(new SqlParameter("@ProjectID", id));
+
+                    sql.Open();
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
         }
     }
 }
