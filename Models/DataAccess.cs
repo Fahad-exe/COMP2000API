@@ -55,11 +55,11 @@ namespace COMP2000API.Models
                 {
                     cmd.CommandType = System.Data.CommandType.StoredProcedure;
                     cmd.Parameters.Add(new SqlParameter("@ProjectID", sp.ProjectID));
-                    cmd.Parameters.Add(new SqlParameter("@Title", sp.Title));
-                    cmd.Parameters.Add(new SqlParameter("@Description", sp.Description));
+                    cmd.Parameters.Add(new SqlParameter("@Title", string.IsNullOrEmpty(sp.Title) ? (object)DBNull.Value : sp.Title));
+                    cmd.Parameters.Add(new SqlParameter("@Description", string.IsNullOrEmpty(sp.Description) ? (object)DBNull.Value : sp.Description));
                     cmd.Parameters.Add(new SqlParameter("@Year", sp.Year));
-                    cmd.Parameters.Add(new SqlParameter("@thumbnailURL", sp.ThumbnailURL));
-                    cmd.Parameters.Add(new SqlParameter("@posterURL", sp.PosterURL));
+                    cmd.Parameters.Add(new SqlParameter("@thumbnailURL", string.IsNullOrEmpty(sp.ThumbnailURL) ? (object)DBNull.Value : sp.ThumbnailURL));
+                    cmd.Parameters.Add(new SqlParameter("@posterURL", string.IsNullOrEmpty(sp.PosterURL) ? (object)DBNull.Value : sp.PosterURL));
 
                     sql.Open();
 
@@ -82,6 +82,24 @@ namespace COMP2000API.Models
                     cmd.ExecuteNonQuery();
                 }
             }
+        }
+
+        public void SaveStudentPhoto(int StudentID, Byte[] photo)
+        {
+            using (SqlConnection sql = new SqlConnection(_connection))
+            {
+                using (SqlCommand cmd = new SqlCommand("SaveStudentPhoto", sql))
+                {
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.Parameters.Add(new SqlParameter("@StudentID", StudentID));
+                    cmd.Parameters.Add(new SqlParameter("@photo", photo));
+
+                    sql.Open();
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
+
         }
     }
 }

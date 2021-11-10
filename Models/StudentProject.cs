@@ -16,6 +16,7 @@ namespace COMP2000API.Models
         public string PosterURL { get; set; }
         public string First_Name { get; set; }
         public string Second_Name { get; set; }
-        public string PictureURL { get; set; }
+        public Byte[] Photo { get; set; }
+      
     }
 }

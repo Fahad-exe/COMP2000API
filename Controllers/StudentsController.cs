@@ -52,16 +52,28 @@ namespace COMP2000API.Controllers
             }
             catch(Exception e)
             {
-                responseMessage = e.Message;
+                responseMessage = e.ToString();
+                return Ok(new string[] { "Error", responseMessage });
             }
 
-            return Ok(new string[] {"Error", responseMessage });
+            return StatusCode(201);
         }
 
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody] StudentProject sp)
         {
-            _database.Update(sp);
+            string responseMessage = "";
+
+            try
+            {
+                sp.ProjectID = id;
+                _database.Update(sp);
+            }
+            catch (Exception e)
+            {
+                responseMessage = e.ToString();
+                return Ok(new string[] { "Error", responseMessage });
+            }
             return NoContent();
         }
 
