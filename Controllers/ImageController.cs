@@ -22,23 +22,40 @@ namespace COMP2000API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(IFormFile file, int StudentID )
+        public async Task<IActionResult> Post(int id, IFormFile file)
         {
+            var responseMessage = "ID coming in is "+id.ToString();
+
             var extension = Path.GetExtension(file.FileName);
             var size = file.Length;
+           
             //Only proceed if we have a jpg object and it is below a certain size
             if ((extension.ToLower().Equals(".jpg")) && (size < (5 * 1024 * 1024)))
             {
                 if (file.Length > 0)
                 {
+                   
                     using (var memoryStream = new MemoryStream())
                     {
                         await file.CopyToAsync(memoryStream);
+                        try
+                        {
+                            responseMessage += "; Inside for ProjectID " + id.ToString();
 
-                        _database.SaveStudentPhoto(StudentID, memoryStream.ToArray());
+                            responseMessage += _database.SaveStudentPhoto(id, memoryStream.ToArray());
+                           
+                            return Ok(new string[] { "output: ", responseMessage });
+                            //return StatusCode(201);
+                        }
+                        catch (Exception e)
+                        {
+                            responseMessage = e.ToString();
+                            return Ok(new string[] { "Error", responseMessage });
+                        }
                     }
                 }
-                return StatusCode(201);
+                else
+                    return BadRequest();
             }
             else
                 return BadRequest();

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -84,22 +85,31 @@ namespace COMP2000API.Models
             }
         }
 
-        public void SaveStudentPhoto(int StudentID, Byte[] photo)
+        public string SaveStudentPhoto(int ProjectID, Byte[] photo)
         {
+            string strReturn = "Starting here : ";
             using (SqlConnection sql = new SqlConnection(_connection))
             {
                 using (SqlCommand cmd = new SqlCommand("SaveStudentPhoto", sql))
                 {
-                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
-                    cmd.Parameters.Add(new SqlParameter("@StudentID", StudentID));
-                    cmd.Parameters.Add(new SqlParameter("@photo", photo));
+                    strReturn += "About to call stored procedure for " + ProjectID.ToString();
 
-                    sql.Open();
+                        cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                        cmd.Parameters.Add(new SqlParameter("@ProjectID", ProjectID));
+                        cmd.Parameters.AddWithValue("@photo", SqlDbType.VarBinary).Value = photo;
 
-                    cmd.ExecuteNonQuery();
+                    strReturn += " added all the parameters.  "+photo.ToString();
+
+                        sql.Open();
+
+                        cmd.ExecuteScalar();
+
+                    
+
+                    strReturn += "Executed query.";
                 }
             }
-
+            return strReturn;
         }
     }
 }
